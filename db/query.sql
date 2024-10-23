@@ -1,4 +1,4 @@
-\c winery_app_db;
+\c employee_tracker_app_db;
 
 
 
