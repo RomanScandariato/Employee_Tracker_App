@@ -1,44 +1,59 @@
 import client from "../config/connection.js";
-export async function getAllShops() {
+import 'console.table';
+export async function getAllDepartments() {
     const sql = `
     SELECT 
-        shops.id AS shop_id,
-        name AS shop_name,
-        adress AS shop_adress,
-        users.id AS user_id,
-        CONCAT(users.first_name, ' ', users.last_name) AS user_name,
-        users.email AS user_email,
-        CONCAT(managers.first_name, ' ', managers.last_name) AS manager,
-        wines.id AS wine_id,
-        brand AS wine_brand,
-        type AS wine_type,
-        region AS wine_region,
-        price AS wine_price
-    FROM shops
-    JOIN users 
-        ON shops.user_id = users.id
-    LEFT JOIN wines 
-        ON shops.id = wines.shop_id
-    LEFT JOIN users AS managers
-        ON users.manager_id = managers.id
+    *
+    FROM department;
     `;
     const { rows } = await client.query(sql);
     return rows;
 }
-export async function getAllUsers() {
+export async function getAllRoles() {
     const sql = `
-        SELECT 
-            id, 
-            CONCAT(first_name, ' ', last_name) AS user_name
-        FROM users
+    SELECT 
+        role.id,
+        role.title,
+        department.name AS department,
+        role.salary
+    FROM role
+    LEFT JOIN department
+        ON role.department_id = department.id
     `;
     const { rows } = await client.query(sql);
     return rows;
 }
-export async function createShop(user_id, name, adress) {
+export async function getAllEmployees(_p0) {
     const sql = `
-        INSERT INTO shops (name, adress, user_id) VALUES ($1, $2, $3)
+    SELECT 
+        employee.id as id,
+        employee.first_name,
+        employee.last_name,
+        title,
+        name AS department,
+        salary,
+        CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+    FROM employee
+    JOIN role
+        ON employee.role_id = role.id
+    JOIN department
+        ON role.department_id = department.id
+    LEFT JOIN employee as manager
+        ON employee.manager_id = manager.id
     `;
-    await client.query(sql, [name, adress, user_id]);
+    const { rows } = await client.query(sql);
+    return rows;
+}
+export async function addDepartment(name) {
+    await client.query('INSERT INTO department (name) VALUES ($1)', [name]);
+}
+export async function addRole(title, salary, department_id) {
+    await client.query('INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)', [title, salary, department_id]);
+}
+export async function addEmployee(first_name, last_name, role_id, manager_id) {
+    await client.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [first_name, last_name, role_id, manager_id]);
+}
+export async function updateEmployeeRole(employee_id, role_id) {
+    await client.query('UPDATE employee SET role_id = $1 WHERE id = $2', [role_id, employee_id]);
 }
 //# sourceMappingURL=query.js.map

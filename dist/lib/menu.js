@@ -1,90 +1,87 @@
 import inquirer from 'inquirer';
 import 'console.table';
-import { getAllShops, getAllUsers, createShop } from './query.js';
-let showWelcome = false;
-export async function addShop() {
-    const usersArray = await getAllUsers();
-    const { user_id, name, adress } = await inquirer.prompt([
-        {
-            message: 'Please select the owner of the shop',
-            name: 'user_id',
-            type: 'list',
-            choices: usersArray.map((userObj) => {
-                return {
-                    name: userObj.user_name,
-                    value: userObj.id
-                };
-            })
-        },
-        {
-            message: 'Enter the shop name',
-            name: 'name',
-            type: 'input'
-        },
-        {
-            message: 'Enter the shop adress',
-            name: 'adress',
-            type: 'input'
-        }
-    ]);
-    await createShop(user_id, name, adress);
-    console.log('\nShop Created Succesfully!!\n');
-}
-export async function showAllShops() {
-    const shopRowsArray = await getAllShops();
-    console.table(shopRowsArray);
-}
+import { getAllDepartments, getAllRoles, getAllEmployees, addDepartment, addEmployee, updateEmployeeRole } from './query.js';
 export async function showMainMenu() {
-    if (!showWelcome) {
-        console.log('\n------- Welcome To The Shop App -------\n');
-        showWelcome = true;
-    }
-    const { optionFunction } = await inquirer.prompt({
-        message: 'Please select an option',
-        name: 'optionFunction',
+    const { action } = await inquirer.prompt({
+        name: 'action',
         type: 'list',
+        message: 'What would you like to do?',
         choices: [
-            {
-                name: 'Show All Shops',
-                value: showAllShops
-            },
-            {
-                name: 'Add Shop',
-                value: addShop
-            },
-            {
-                name: 'Quit',
-                value: 0
-            }
-        ]
+            'View All Departments',
+            'View All Roles',
+            'View All Employees',
+            'Add a Department',
+            'Add a role',
+            'Add an employee',
+            'Update an employee role',
+            'Quit'
+        ],
     });
-    if (!optionFunction) {
-        console.log('\nThanks for using the shop app!\n');
-        process.exit();
+    switch (action) {
+        case 'View All Departments':
+            console.table(await getAllDepartments());
+            break;
+        case 'View All Roles':
+            console.table(await getAllRoles());
+            break;
+        case 'View All Employees':
+            console.table(await getAllEmployees());
+            break;
+        case 'Add a Department':
+            const { departmentName } = await inquirer.prompt({
+                name: 'departmentName',
+                type: 'input',
+                message: 'What is the name of the department?',
+            });
+            await addDepartment(departmentName);
+            console.log(`Added department: ${departmentName}`);
+            break;
+        case 'Add a Role':
+            const departments = await getAllDepartments();
+            const employees = await getAllEmployees();
+            const { first_name, last_name, role_id, manager_id } = await inquirer.prompt([
+                { name: 'first_name', type: 'input', message: 'Enter the first name of the employee:' },
+                { name: 'last_name', type: 'input', message: 'Enter the last name of the employee:' },
+                {
+                    name: 'role_id',
+                    type: 'list',
+                    message: 'Select the role for the employee:',
+                    choices: departments.map(department => ({ name: department.name, value: department.id })),
+                },
+                {
+                    name: 'manager_id',
+                    type: 'list',
+                    message: 'Select the employee manager:',
+                    choices: [{ name: 'None', value: null }].concat(employees.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id }))),
+                },
+            ]);
+            await addEmployee(first_name, last_name, role_id, manager_id);
+            console.log(`Added employee: ${first_name} ${last_name}`);
+            break;
+        case 'Update an employee role':
+            const allEmployees = await getAllEmployees();
+            const allRoles = await getAllRoles();
+            const { employee_id, new_role_id } = await inquirer.prompt([
+                {
+                    name: 'employee_id',
+                    type: 'list',
+                    message: 'Selet employee to update:',
+                    choices: allEmployees.map(employee => ({ name: `${employee.first_name} ${employee.last_name}`, value: employee.id })),
+                },
+                {
+                    name: 'new_role_id',
+                    type: 'list',
+                    message: 'Select new role for the employee:',
+                    choices: allRoles.map((role => ({ name: role.title, value: role.id }))),
+                },
+            ]);
+            await updateEmployeeRole(employee_id, new_role_id);
+            console.log('Updated employees role');
+            break;
+        case 'Quit':
+            console.log('\nThanks for using the Employee Tracker App!\n');
+            process.exit();
     }
-    await optionFunction();
     showMainMenu();
 }
-// export async function showMainMenu() {
-//     if (!showWelcome) {
-//         console.log('\n------- Welcome To The Shop App -------\n');
-//         showWelcome = true;
-//     }
-//     const {option} = await inquirer.prompt({
-//         message: 'Please select an option',
-//         name: 'option',
-//         type: 'list',
-//         choices: ['Show All Shops', 'Add Shop', 'Show All Wines', 'Add Wine']
-//     }); 
-//     switch(option) {
-//         case 'Show All Shops': 
-//             await showAllShops();
-//             showMainMenu();
-//             break;
-//         case 'Add Shop': 
-//             await addShop();
-//             showMainMenu();
-//             break;
-//     }
-// }
 //# sourceMappingURL=menu.js.map

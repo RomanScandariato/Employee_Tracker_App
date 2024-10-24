@@ -1,18 +1,27 @@
-INSERT INTO users (first_name, last_name, email, manager_id) VALUES 
-    ('Bob', 'Smith', 'bob@test.com', null),
-    ('Jane', 'Doe', 'jane@test.com', null),
-    ('Frank', 'Wilson', 'frank@test.com', 2);
+INSERT INTO department (name) VALUES 
+    ('Sales'),
+    ('Engineering'),
+    ('Finance'),
+    ('Legal');
 
+INSERT INTO role (title, department_id, salary) VALUES 
+    ('Sales Lead', 1, 100000),
+    ('Salesperson', 1, 80000),
+    ('Lead Engineer', 2, 150000),
+    ('Software Enigneer', 2, 120000),
+    ('Account Manager', 3, 160000),
+    ('Accountatnt', 3, 125000),
+    ('Legal Team Lead', 4, 250000),
+    ('Lawyer', 4, 190000);
 
-INSERT INTO shops (name, adress, user_id) VALUES 
-    ('The Bob Smith Winery', '555 wine dr', 1),
-    ('Bob Smith Winery Take 2', '1000 wine dr', 1),
-    ('Jane Doe Winery', '1500 shop ave', 2);
-
-
-INSERT INTO wines (brand, type, region, price, shop_id, user_id) VALUES 
-    ('Josh', 'cabernet', 'Napa Valley', 15.00, 1, 1),
-    ('Chateau Atnauld 2018', 'Bordeaux', 'France', 41.99, 3, 2),
-    ('Domaine de Chevalier 2018', 'Bordeaux', 'France', 94.99, 3, 3);
+INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES 
+    ('John', 'Doe', 1, NULL),
+    ('Mike', 'Chan', 2, 1),
+    ('Ashley', 'Rodriguez', 3, NULL),
+    ('Kevin', 'Tupik', 4, 3),
+    ('Kunal', 'Singh', 5, NULL),
+    ('Malia', 'Brown', 6, 5),
+    ('Sarah', 'Lourd', 7, NULL),
+    ('Tom', 'Allen', 8, 7);
 
 
