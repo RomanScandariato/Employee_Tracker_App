@@ -33,7 +33,7 @@ Be able to check data on employees quick and easy with readable tables!
 
 ## Links
 
-Video Walkthrough: 
+Video Walkthrough: https://drive.google.com/file/d/1g0_6Wi2eoMtnNtKT3YWKwom0Xz1_-BS2/view?usp=sharing 
 
 ## Credits
 
